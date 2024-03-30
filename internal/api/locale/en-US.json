@@ -1,0 +1,20 @@
+{
+  "Red": {
+    "other": "Red"
+  },
+  "Green": {
+    "other": "Green"
+  },
+  "Blue": {
+    "other": "Blue"
+  },
+  "UnspecifiedError": {
+    "other": "Unspecified error"
+  },
+  "InternalDatabaseError": {
+    "other": "Internal database error"
+  },
+  "InvalidRequestBody": {
+    "other": "Invalid request body"
+  }
+}

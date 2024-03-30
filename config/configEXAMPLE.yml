@@ -1,0 +1,18 @@
+app:
+  environment: "dev"
+  name: "files"
+
+logger:
+  level: "debug"
+
+database:
+  host: 172.20.0.2
+  port: 5432
+  username: "postgres"
+  password: "password"
+  name: "wakarimi_files_db"
+  migration-path: migration
+
+http:
+  host: "localhost"
+  port: 8080

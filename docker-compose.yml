@@ -1,0 +1,17 @@
+services:
+  sql_backend:
+    container_name: sql_backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./config:/config
+    ports:
+      - "4321:8080"
+    networks:
+      - free_diagrams_network
+
+networks:
+  free_diagrams_network:
+    external: true

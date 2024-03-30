@@ -1,0 +1,20 @@
+{
+  "Red": {
+    "other": "Красный"
+  },
+  "Green": {
+    "other": "Злёный"
+  },
+  "Blue": {
+    "other": "Синий"
+  },
+  "UnspecifiedError": {
+    "other": "Неизвестная ошибка"
+  },
+  "InternalDatabaseError": {
+    "other": "Внутренняя ошибка базы данных"
+  },
+  "InvalidRequestBody": {
+    "other": "Неверное тело запроса"
+  }
+}
