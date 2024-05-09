@@ -1,13 +1,4 @@
 {
-  "Red": {
-    "other": "Red"
-  },
-  "Green": {
-    "other": "Green"
-  },
-  "Blue": {
-    "other": "Blue"
-  },
   "UnspecifiedError": {
     "other": "Unspecified error"
   },
@@ -16,5 +7,17 @@
   },
   "InvalidRequestBody": {
     "other": "Invalid request body"
+  },
+  "EmptyToken": {
+    "other": "Empty token"
+  },
+  "InvalidToken": {
+    "other": "Invalid token"
+  },
+  "ValidationFailed": {
+    "other": "Data validation error"
+  },
+  "DatabaseNotFound": {
+    "other": "Database not found"
   }
 }

@@ -8,7 +8,7 @@ services:
     volumes:
       - ./config:/config
     ports:
-      - "4321:8080"
+      - "8080:8080"
     networks:
       - free_diagrams_network
 

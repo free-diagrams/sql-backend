@@ -2,22 +2,27 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
-	"github.com/free-diagrams/sql-backend/internal/api/http/controller"
-	"github.com/free-diagrams/sql-backend/internal/api/http/router"
+	routerdoc "github.com/free-diagrams/sql-backend/internal/api/http/doc/router"
+	"github.com/free-diagrams/sql-backend/internal/api/http/middleware"
+	"github.com/free-diagrams/sql-backend/internal/api/http/responsewriter"
+	"github.com/free-diagrams/sql-backend/internal/api/http/v1/controller"
+	routerv1 "github.com/free-diagrams/sql-backend/internal/api/http/v1/router"
+	"github.com/free-diagrams/sql-backend/internal/api/http/wrapper"
 	"github.com/free-diagrams/sql-backend/internal/config"
-	"github.com/free-diagrams/sql-backend/internal/repository/postgres"
-	"github.com/free-diagrams/sql-backend/internal/repository/postgres/adapter/color_repository"
-	"github.com/free-diagrams/sql-backend/internal/service/color_service"
-	"github.com/free-diagrams/sql-backend/internal/usecase"
-	"github.com/free-diagrams/sql-backend/pkg/core"
+	"github.com/free-diagrams/sql-backend/internal/infrastructure/repository/postgres"
+	"github.com/free-diagrams/sql-backend/internal/infrastructure/repository/postgres/adapter/database_repository"
+	"github.com/free-diagrams/sql-backend/internal/infrastructure/repository/postgres/adapter/user_repository"
+	usecasev1 "github.com/free-diagrams/sql-backend/internal/usecase/v1"
+	"github.com/free-diagrams/sql-backend/pkg/chirouter"
+	"github.com/free-diagrams/sql-backend/pkg/httpserver"
 	"github.com/free-diagrams/sql-backend/pkg/loclzr"
-	"github.com/free-diagrams/sql-backend/pkg/logging"
+	"github.com/free-diagrams/sql-backend/pkg/logger"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/pkg/errors"
-	"github.com/rs/zerolog"
 	"golang.org/x/text/language"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
 func Run() {
@@ -26,7 +31,7 @@ func Run() {
 		panic(errors.Wrap(err, "failed to parse config"))
 	}
 
-	log, err := createLogger(cfg)
+	log, err := logger.NewConsoleAndHookLogger(cfg.Logger.Level)
 	if err != nil {
 		panic(errors.Wrap(err, "failed to create logger"))
 	}
@@ -46,40 +51,46 @@ func Run() {
 
 	bundle := i18n.NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", json.Unmarshal)
-	bundle.MustLoadMessageFile("/locale/en-US.json")
-	bundle.MustLoadMessageFile("/locale/ru-RU.json")
+	bundle.MustLoadMessageFile("internal/api/locale/en-US.json")
+	bundle.MustLoadMessageFile("internal/api/locale/ru-RU.json")
 	localizer := loclzr.New(bundle)
 
-	colorRepository := color_repository.New(db, log)
+	databaseRepository := database_repository.New(db, log)
+	userRepository := user_repository.New(db, log)
 
-	colorService := color_service.New(colorRepository, localizer, log)
+	useCase := usecasev1.New(databaseRepository, userRepository, log)
 
-	useCase := usecase.New(colorService, log)
+	responseWriter := responsewriter.New(localizer, log)
 
-	controller := controller.New(useCase, localizer, log)
+	controller := controller.New(useCase, responseWriter, log)
 
-	httpRouter := router.New(controller, log)
-	httpRouter.RegisterRoutes()
-	err = httpRouter.StartHTTPServer(cfg.HTTP)
-	if err != nil {
-		panic(errors.Wrap(err, "failed to start http server"))
+	wrapper := wrapper.New(responseWriter, log)
+
+	middleware := middleware.New(useCase, responseWriter, log)
+
+	chiMux := chirouter.NewChiMux()
+
+	docRouter := routerdoc.New(chiMux, log)
+	v1Router := routerv1.New(chiMux, middleware, wrapper, controller, log)
+
+	docRouter.RegisterRoutes()
+	v1Router.RegisterRoutes()
+
+	httpServer := httpserver.New(
+		chiMux,
+		httpserver.Addr(cfg.HTTP.Host, cfg.HTTP.Port),
+	)
+
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
+
+	select {
+	case s := <-interrupt:
+		log.Info().Str("signal", s.String()).Msg("signal received")
 	}
-}
 
-func createLogger(cfg *config.Config) (*zerolog.Logger, error) {
-	level := logging.ParseZerologLevel(cfg.Logger.Level)
-
-	switch cfg.App.Environment {
-	case core.EnvProd, core.EnvTest:
-		logger := zerolog.New(os.Stdout).Level(level).With().
-			Str("service", cfg.App.Name).Timestamp().Caller().Logger()
-		return &logger, nil
-	case core.EnvDev:
-		consoleWriter := zerolog.NewConsoleWriter()
-		logger := zerolog.New(consoleWriter).Level(level).With().
-			Str("service", cfg.App.Name).Timestamp().Caller().Logger()
-		return &logger, nil
-	default:
-		return nil, fmt.Errorf("failed to initialize logger")
+	err = httpServer.Shutdown()
+	if err != nil {
+		log.Error().Err(err).Msg("failed to shutdown server")
 	}
 }

@@ -1,5 +1,5 @@
 # Build the binary
-FROM golang:1.22 AS build
+FROM golang:1.22.2 AS build
 
 RUN useradd -u 10001 gopher
 
@@ -27,7 +27,7 @@ COPY --from=build /etc/passwd /etc/passwd
 USER gopher
 
 COPY --from=build /opt/${NAME}/bin/${NAME} /${NAME}
-COPY --from=build /opt/${NAME}/internal/repository/postgres/migration /migration
-COPY --from=build /opt/${NAME}/internal/api/locale /locale
+COPY --from=build /opt/${NAME}/internal/infrastructure/repository/postgres/migration internal/infrastructure/repository/postgres/migration
+COPY --from=build /opt/${NAME}/internal/api/locale internal/api/locale
 
 CMD ["./sql-backend"]

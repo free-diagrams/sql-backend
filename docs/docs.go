@@ -19,24 +19,21 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/colors": {
+        "/v1/databases": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get all colors",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Get all databases",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Color"
+                    "Database"
                 ],
-                "summary": "Get all colors",
+                "summary": "Get all databases",
                 "parameters": [
                     {
                         "type": "string",
@@ -52,12 +49,21 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/usecase.GetColorsResponseItem"
+                                "$ref": "#/definitions/controller.GetDatabasesResponseItem"
                             }
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpresp.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpresp.Error"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error",
@@ -70,6 +76,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controller.GetDatabasesResponseItem": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "httpresp.Error": {
             "type": "object",
             "properties": {
@@ -80,20 +97,13 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
-        },
-        "usecase.GetColorsResponseItem": {
-            "type": "object",
-            "properties": {
-                "hexCode": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
@@ -101,7 +111,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:4321",
+	Host:             "localhost:8080",
 	BasePath:         "/api",
 	Schemes:          []string{},
 	Title:            "Free-Diagrams SQL API",

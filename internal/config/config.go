@@ -13,7 +13,7 @@ type Config struct {
 }
 
 type AppConfig struct {
-	Name        string `mapstructure:"name" default:"files"`
+	Name        string `mapstructure:"name" default:"sql-backend"`
 	Environment string `mapstructure:"environment" required:"yes"`
 }
 
@@ -32,7 +32,7 @@ type DBConfig struct {
 
 type HTTPConfig struct {
 	Host string `mapstructure:"host" required:"yes"`
-	Port int    `mapstructure:"port" required:"yes"`
+	Port string `mapstructure:"port" required:"yes"`
 }
 
 func Parse() (*Config, error) {
@@ -53,7 +53,7 @@ func Parse() (*Config, error) {
 		return nil, errors.Wrap(err, "failed to unmarshal config")
 	}
 
-	config.DB.MigrationPath = "/migration"
+	config.DB.MigrationPath = "internal/infrastructure/repository/postgres/migration"
 
 	return &config, nil
 }

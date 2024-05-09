@@ -10,27 +10,24 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:4321",
+    "host": "localhost:8080",
     "basePath": "/api",
     "paths": {
-        "/colors": {
+        "/v1/databases": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get all colors",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Get all databases",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Color"
+                    "Database"
                 ],
-                "summary": "Get all colors",
+                "summary": "Get all databases",
                 "parameters": [
                     {
                         "type": "string",
@@ -46,12 +43,21 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/usecase.GetColorsResponseItem"
+                                "$ref": "#/definitions/controller.GetDatabasesResponseItem"
                             }
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpresp.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpresp.Error"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error",
@@ -64,6 +70,17 @@
         }
     },
     "definitions": {
+        "controller.GetDatabasesResponseItem": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "httpresp.Error": {
             "type": "object",
             "properties": {
@@ -74,20 +91,13 @@
                     "type": "string"
                 }
             }
-        },
-        "usecase.GetColorsResponseItem": {
-            "type": "object",
-            "properties": {
-                "hexCode": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

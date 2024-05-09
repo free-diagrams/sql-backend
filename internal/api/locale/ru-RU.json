@@ -1,13 +1,4 @@
 {
-  "Red": {
-    "other": "Красный"
-  },
-  "Green": {
-    "other": "Злёный"
-  },
-  "Blue": {
-    "other": "Синий"
-  },
   "UnspecifiedError": {
     "other": "Неизвестная ошибка"
   },
@@ -16,5 +7,17 @@
   },
   "InvalidRequestBody": {
     "other": "Неверное тело запроса"
+  },
+  "EmptyToken": {
+    "other": "Токен не передан"
+  },
+  "InvalidToken": {
+    "other": "Недействительный токен"
+  },
+  "ValidationFailed": {
+    "other": "Ошибка при проверке данных"
+  },
+  "DatabaseNotFound": {
+    "other": "База данных не найдена"
   }
 }

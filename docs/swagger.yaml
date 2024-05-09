@@ -1,5 +1,12 @@
 basePath: /api
 definitions:
+  controller.GetDatabasesResponseItem:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   httpresp.Error:
     properties:
       error:
@@ -7,16 +14,7 @@ definitions:
       message:
         type: string
     type: object
-  usecase.GetColorsResponseItem:
-    properties:
-      hexCode:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-    type: object
-host: localhost:4321
+host: localhost:8080
 info:
   contact: {}
   description: Free-Diagrams SQL API
@@ -26,11 +24,9 @@ info:
   title: Free-Diagrams SQL API
   version: "1.0"
 paths:
-  /colors:
+  /v1/databases:
     get:
-      consumes:
-      - application/json
-      description: Get all colors
+      description: Get all databases
       parameters:
       - default: en-US
         description: Language preference
@@ -44,17 +40,28 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/usecase.GetColorsResponseItem'
+              $ref: '#/definitions/controller.GetDatabasesResponseItem'
             type: array
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpresp.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpresp.Error'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/httpresp.Error'
       security:
       - ApiKeyAuth: []
-      summary: Get all colors
+      summary: Get all databases
       tags:
-      - Color
+      - Database
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
