@@ -3,7 +3,7 @@ package database_repository
 import (
 	"context"
 	domainentity "github.com/free-diagrams/sql-backend/internal/domain/entity"
-	"github.com/free-diagrams/sql-backend/internal/infrastructure/repository/entity"
+	"github.com/free-diagrams/sql-backend/internal/infrastructure/repository/postgres/entity"
 	"github.com/free-diagrams/sql-backend/pkg/errs"
 	"github.com/free-diagrams/sql-backend/pkg/storage/storagesql"
 	"github.com/jmoiron/sqlx"

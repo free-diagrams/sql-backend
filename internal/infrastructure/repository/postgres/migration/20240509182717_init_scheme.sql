@@ -1,3 +1,5 @@
+-- +goose Up
+-- +goose StatementBegin
 CREATE TABLE users
 (
     id         TEXT PRIMARY KEY,
@@ -70,3 +72,23 @@ CREATE TABLE relations
     second_row_id            TEXT NOT NULL REFERENCES rows (id),
     second_row_relation_type TEXT NOT NULL
 );
+-- +goose StatementEnd
+
+-- +goose Down
+-- +goose StatementBegin
+DROP TABLE relations;
+
+DROP TABLE rows;
+
+DROP TABLE tables;
+
+DROP TABLE data_types;
+
+DROP TABLE access_rights;
+
+DROP TABLE diagrams;
+
+DROP TABLE databases;
+
+DROP TABLE users;
+-- +goose StatementEnd

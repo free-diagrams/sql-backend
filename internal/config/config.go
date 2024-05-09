@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
+	"time"
 )
 
 type Config struct {
@@ -22,12 +23,15 @@ type LoggerConfig struct {
 }
 
 type DBConfig struct {
-	Host          string `mapstructure:"host" required:"yes"`
-	Port          int    `mapstructure:"port" required:"yes"`
-	Username      string `mapstructure:"username" required:"yes"`
-	Password      string `mapstructure:"password" required:"yes"`
-	Name          string `mapstructure:"name" required:"yes"`
-	MigrationPath string
+	Host            string        `mapstructure:"host" required:"yes"`
+	Port            int           `mapstructure:"port" required:"yes"`
+	Username        string        `mapstructure:"username" required:"yes"`
+	Password        string        `mapstructure:"password" required:"yes"`
+	Name            string        `mapstructure:"name" required:"yes"`
+	MaxOpenConns    int           `mapstructure:"max-open-conns" default:"25"`
+	MaxIdleConns    int           `mapstructure:"max-idle-conns" default:"10"`
+	ConnMaxLifeTime time.Duration `mapstructure:"conn-max-life-time" default:"5m"`
+	MigrationPath   string
 }
 
 type HTTPConfig struct {

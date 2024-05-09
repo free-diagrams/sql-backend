@@ -3,29 +3,19 @@ package postgres
 import (
 	"fmt"
 	"github.com/free-diagrams/sql-backend/internal/config"
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
-	"github.com/pkg/errors"
+	"github.com/pressly/goose/v3"
 	"strings"
+	"time"
 )
 
-func New(cfg config.DBConfig) (*sqlx.DB, error) {
-	db, err := connectDB(cfg)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to connect to database")
-	}
-
-	err = runMigrations(db, cfg.MigrationPath)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to run migrations")
-	}
-
-	return db, nil
+type Postgres struct {
+	*sqlx.DB
 }
 
-func connectDB(cfg config.DBConfig) (db *sqlx.DB, err error) {
+func New(cfg config.DBConfig) (*Postgres, error) {
 	connectionStringBuilder := strings.Builder{}
 	connectionStringBuilder.WriteString(fmt.Sprintf("postgresql://%s", cfg.Username))
 	connectionStringBuilder.WriteString(fmt.Sprintf(":%s", cfg.Password))
@@ -35,38 +25,28 @@ func connectDB(cfg config.DBConfig) (db *sqlx.DB, err error) {
 	connectionStringBuilder.WriteString("?sslmode=disable")
 	connectionString := connectionStringBuilder.String()
 
-	db, err = sqlx.Connect("postgres", connectionString)
+	db, err := sqlx.Open("pgx", connectionString)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to connect to database")
+		return nil, err
 	}
 
-	err = db.Ping()
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to ping connected database")
+	pgdb := Postgres{
+		db,
 	}
 
-	return db, nil
-}
+	db.SetMaxOpenConns(cfg.MaxOpenConns)
+	db.SetMaxIdleConns(cfg.MaxIdleConns)
+	db.SetConnMaxLifetime(cfg.ConnMaxLifeTime * time.Minute)
 
-func runMigrations(db *sqlx.DB, migrationsPath string) error {
-	driver, err := postgres.WithInstance(db.DB, &postgres.Config{})
-	if err != nil {
-		return errors.Wrap(err, "failed to create driver")
+	goose.SetTableName("migrations")
+
+	if err := goose.SetDialect("postgres"); err != nil {
+		return nil, err
 	}
 
-	migration, err := migrate.NewWithDatabaseInstance(
-		"file://"+migrationsPath,
-		"postgres",
-		driver,
-	)
-	if err != nil {
-		return errors.Wrap(err, "failed to create migration")
+	if err := goose.Up(db.DB, cfg.MigrationPath); err != nil {
+		return nil, err
 	}
 
-	err = migration.Up()
-	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		return errors.Wrap(err, "failed to apply migration")
-	}
-
-	return nil
+	return &pgdb, nil
 }

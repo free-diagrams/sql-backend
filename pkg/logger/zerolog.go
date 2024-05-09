@@ -10,6 +10,14 @@ type Logger struct {
 	*zerolog.Logger
 }
 
+func (l Logger) Printf(format string, v ...interface{}) {
+	l.Debug().Msgf(format, v...)
+}
+
+func (l Logger) Fatalf(format string, v ...interface{}) {
+	l.Fatal().Msgf(format, v...)
+}
+
 func NewConsoleAndHookLogger(logLevel string, hookWriters ...io.Writer) (*Logger, error) {
 	if logLevel == "" {
 		logLevel = "trace"

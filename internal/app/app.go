@@ -19,6 +19,7 @@ import (
 	"github.com/free-diagrams/sql-backend/pkg/logger"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/pkg/errors"
+	"github.com/pressly/goose/v3"
 	"golang.org/x/text/language"
 	"os"
 	"os/signal"
@@ -36,6 +37,7 @@ func Run() {
 		panic(errors.Wrap(err, "failed to create logger"))
 	}
 	log.Debug().Msg("Logger initialized")
+	goose.SetLogger(log)
 
 	db, err := postgres.New(cfg.DB)
 	if err != nil {
