@@ -7,16 +7,11 @@ definitions:
       name:
         type: string
     type: object
-  httpresp.Error:
-    properties:
-      error:
-        type: string
-      message:
-        type: string
+  entity.NotImplemented:
     type: object
 host: localhost:8080
 info:
-  contact: { }
+  contact: {}
   description: Free-Diagrams SQL API
   license:
     name: MIT
@@ -24,17 +19,82 @@ info:
   title: Free-Diagrams SQL API
   version: "1.0"
 paths:
+  /v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/entity.NotImplemented'
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.NotImplemented'
+      summary: Login
+      tags:
+      - Authorization
+  /v1/auth/logout:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.NotImplemented'
+      summary: Logout
+      tags:
+      - Authorization
+  /v1/auth/refresh:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.NotImplemented'
+      summary: Refresh
+      tags:
+      - Authorization
   /v1/databases:
     get:
-      description: Get all databases
       parameters:
-        - default: en-US
-          description: Language preference
-          in: header
-          name: Accept-Language
-          type: string
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: OK
@@ -42,23 +102,655 @@ paths:
             items:
               $ref: '#/definitions/controller.GetDatabasesResponseItem'
             type: array
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/httpresp.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/httpresp.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/httpresp.Error'
       security:
-        - ApiKeyAuth: [ ]
-      summary: Get all databases
+      - ApiKeyAuth: []
+      summary: Get databases
       tags:
-        - Database
+      - Database
+  /v1/databases/{database_id}/datatypes:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Database ID
+        in: path
+        name: database_id
+        required: true
+        type: integer
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.NotImplemented'
+      security:
+      - ApiKeyAuth: []
+      summary: Get datatypes
+      tags:
+      - Datatype
+  /v1/diagrams:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.NotImplemented'
+      security:
+      - ApiKeyAuth: []
+      summary: Get requesters diagrams
+      tags:
+      - Diagram
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Diagram ID
+        in: path
+        name: diagram_id
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/entity.NotImplemented'
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.NotImplemented'
+      security:
+      - ApiKeyAuth: []
+      summary: Create diagram
+      tags:
+      - Diagram
+  /v1/diagrams/{diagram_id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Diagram ID
+        in: path
+        name: diagram_id
+        required: true
+        type: integer
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Delete diagram
+      tags:
+      - Diagram
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Diagram ID
+        in: path
+        name: diagram_id
+        required: true
+        type: integer
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.NotImplemented'
+      security:
+      - ApiKeyAuth: []
+      summary: Get diagram
+      tags:
+      - Diagram
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Diagram ID
+        in: path
+        name: diagram_id
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/entity.NotImplemented'
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Edit diagram
+      tags:
+      - Diagram
+  /v1/diagrams/{diagram_id}/access:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Diagram ID
+        in: path
+        name: diagram_id
+        required: true
+        type: integer
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.NotImplemented'
+      security:
+      - ApiKeyAuth: []
+      summary: Get access rights
+      tags:
+      - AccessRight
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Diagram ID
+        in: path
+        name: diagram_id
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/entity.NotImplemented'
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.NotImplemented'
+      security:
+      - ApiKeyAuth: []
+      summary: Give access rights
+      tags:
+      - AccessRight
+  /v1/diagrams/{diagram_id}/tables:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Diagram ID
+        in: path
+        name: diagram_id
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/entity.NotImplemented'
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.NotImplemented'
+      security:
+      - ApiKeyAuth: []
+      summary: Create table
+      tags:
+      - Table
+  /v1/diagrams/access/{access_id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Access ID
+        in: path
+        name: access_id
+        required: true
+        type: integer
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.NotImplemented'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete access rights
+      tags:
+      - AccessRight
+  /v1/diagrams/tables/{table_id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: integer
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Delete table
+      tags:
+      - Table
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/entity.NotImplemented'
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Edit table
+      tags:
+      - Table
+  /v1/diagrams/tables/{table_id}/rows:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/entity.NotImplemented'
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.NotImplemented'
+      security:
+      - ApiKeyAuth: []
+      summary: Create row
+      tags:
+      - Row
+  /v1/diagrams/tables/relations:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/entity.NotImplemented'
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.NotImplemented'
+      security:
+      - ApiKeyAuth: []
+      summary: Create relation
+      tags:
+      - Relation
+  /v1/diagrams/tables/relations/{relation_id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Relation ID
+        in: path
+        name: relation_id
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/entity.NotImplemented'
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Delete relation
+      tags:
+      - Relation
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Relation ID
+        in: path
+        name: relation_id
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/entity.NotImplemented'
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Edit relation
+      tags:
+      - Relation
+  /v1/diagrams/tables/rows/{row_id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Row ID
+        in: path
+        name: row_id
+        required: true
+        type: integer
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Delete row
+      tags:
+      - Row
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Row ID
+        in: path
+        name: row_id
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/entity.NotImplemented'
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Edit row
+      tags:
+      - Row
+  /v1/tables/{table_id}/coordinates:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: integer
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.NotImplemented'
+      security:
+      - ApiKeyAuth: []
+      summary: Get table coordinates
+      tags:
+      - Coordinate
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/entity.NotImplemented'
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Get table coordinates
+      tags:
+      - Coordinate
+  /v1/users/{user_id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.NotImplemented'
+      security:
+      - ApiKeyAuth: []
+      summary: Get user
+      tags:
+      - User
+  /v1/users/me:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.NotImplemented'
+      security:
+      - ApiKeyAuth: []
+      summary: Get requester user
+      tags:
+      - User
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/entity.NotImplemented'
+      - default: en-US
+        description: Language preference
+        in: header
+        name: Accept-Language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Edit requester user
+      tags:
+      - User
 securityDefinitions:
   ApiKeyAuth:
     in: header

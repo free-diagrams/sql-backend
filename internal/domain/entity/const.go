@@ -62,3 +62,6 @@ func ParseRelationType(value string) (RelationType, error) {
 		return RelationUnknown, errs.WrapErrorError(internalerr.Parsing, errors.New("unknown relation type"))
 	}
 }
+
+type NotImplemented struct {
+}

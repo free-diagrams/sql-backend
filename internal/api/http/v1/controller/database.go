@@ -10,16 +10,12 @@ type GetDatabasesResponseItem struct {
 }
 
 // GetDatabases
-// @Summary Get all databases
+// @Summary Get databases
 // @Security ApiKeyAuth
 // @Tags Database
-// @Description Get all databases
 // @Produce json
 // @Param Accept-Language header string false "Language preference" default(en-US)
 // @Success 200 {array} GetDatabasesResponseItem
-// @Failure 401 {object} httpresp.Error
-// @Failure 404 {object} httpresp.Error
-// @Failure 500 {object} httpresp.Error
 // @Router /v1/databases [get]
 func (c *Controller) GetDatabases(w http.ResponseWriter, r *http.Request) error {
 	c.log.Debug().Msg("Getting all databases")
