@@ -1,38 +1,22 @@
 package errs
 
 import (
-	"github.com/pkg/errors"
-	"net/http"
+	"errors"
+	"fmt"
 )
 
-var (
-	EmptyTokenText   = "empty token"
-	EmptyToken       = errors.New(EmptyTokenText)
-	InvalidTokenText = "invalid token"
-	InvalidToken     = errors.New(InvalidTokenText)
+func New(msg string) error {
+	return errors.New(msg)
+}
 
-	ValidationText = "validation failed"
-	Validation     = errors.New(ValidationText)
+func WrapErrorError(errHigh error, errLow error) error {
+	return fmt.Errorf("%w: %w", errHigh, errLow)
+}
 
-	DatabaseNotFoundText = "database not found"
-	DatabaseNotFound     = errors.New(DatabaseNotFoundText)
+func WrapErrorString(err error, msg string) error {
+	return fmt.Errorf("%w: %s", err, msg)
+}
 
-	InternalDatabaseText = "internal database error"
-	InternalDatabase     = errors.New(InternalDatabaseText)
-)
-
-func ErrorToHTTPStatusAndMessageID(err error) (int, string) {
-	if errors.Is(err, EmptyToken) {
-		return http.StatusUnauthorized, "EmptyToken"
-	} else if errors.Is(err, InvalidToken) {
-		return http.StatusUnauthorized, "InvalidToken"
-	} else if errors.Is(err, Validation) {
-		return http.StatusBadRequest, "ValidationFailed"
-	} else if errors.Is(err, DatabaseNotFound) {
-		return http.StatusNotFound, "DatabaseNotFound"
-	} else if errors.Is(err, InternalDatabase) {
-		return http.StatusInternalServerError, "InternalDatabaseError"
-	} else {
-		return http.StatusInternalServerError, "UnspecifiedError"
-	}
+func WrapStringError(msg string, err error) error {
+	return fmt.Errorf("%s: %w", msg, err)
 }

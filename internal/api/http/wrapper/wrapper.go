@@ -48,9 +48,11 @@ func (w *Wrapper) Wrap(controllerFunction func(w http.ResponseWriter, r *http.Re
 
 		requester := request.Context().Value(entity.ContextUser)
 		requesterUserID := ""
+		requesterUsername := ""
 		if requester != nil {
 			if u, ok := requester.(*entity.User); ok {
 				requesterUserID = *u.ID
+				requesterUsername = u.Username
 			}
 		}
 
@@ -82,6 +84,7 @@ func (w *Wrapper) Wrap(controllerFunction func(w http.ResponseWriter, r *http.Re
 				Int("response_status", ww.Status()).
 				Str("user_agent", request.UserAgent()).
 				Str("user_id", requesterUserID).
+				Str("user_username", requesterUsername).
 				Str("source_ip", request.RemoteAddr).
 				Msgf("request handled with unexpected error: %d %s %s", ww.Status(), request.Method, request.URL.Path)
 		} else if ww.Status() >= http.StatusBadRequest {
@@ -96,6 +99,7 @@ func (w *Wrapper) Wrap(controllerFunction func(w http.ResponseWriter, r *http.Re
 				Int("response_status", ww.Status()).
 				Str("user_agent", request.UserAgent()).
 				Str("user_id", requesterUserID).
+				Str("user_username", requesterUsername).
 				Str("source_ip", request.RemoteAddr).
 				Msgf("request handled with error: %d %s %s", ww.Status(), request.Method, request.URL.Path)
 		} else {
@@ -109,6 +113,7 @@ func (w *Wrapper) Wrap(controllerFunction func(w http.ResponseWriter, r *http.Re
 				Int("response_status", ww.Status()).
 				Str("user_agent", request.UserAgent()).
 				Str("user_id", requesterUserID).
+				Str("user_username", requesterUsername).
 				Str("source_ip", request.RemoteAddr).
 				Msgf("request handled succussfully: %d %s %s", ww.Status(), request.Method, request.URL.Path)
 		}

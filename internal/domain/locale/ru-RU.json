@@ -1,5 +1,5 @@
 {
-  "UnspecifiedError": {
+  "UnexpectedError": {
     "other": "Неизвестная ошибка"
   },
   "InternalDatabaseError": {

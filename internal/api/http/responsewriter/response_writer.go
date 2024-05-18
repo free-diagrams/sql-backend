@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/free-diagrams/sql-backend/internal/domain/entity"
-	"github.com/free-diagrams/sql-backend/pkg/errs"
+	"github.com/free-diagrams/sql-backend/internal/domain/errors"
 	"github.com/free-diagrams/sql-backend/pkg/httpresp"
 	"github.com/free-diagrams/sql-backend/pkg/loclzr"
 	"github.com/free-diagrams/sql-backend/pkg/logger"
@@ -35,7 +35,7 @@ func (w *ResponseWriter) Write(ctx context.Context, writer http.ResponseWriter, 
 }
 
 func (w *ResponseWriter) WriteError(ctx context.Context, writer http.ResponseWriter, err error) {
-	httpCode, messageID := errs.ErrorToHTTPStatusAndMessageID(err)
+	httpCode, messageID := errors.ErrorToHTTPStatusAndMessageID(err)
 
 	w.Write(ctx, writer, httpCode, w.constructError(ctx, messageID, err))
 }
@@ -43,7 +43,7 @@ func (w *ResponseWriter) WriteError(ctx context.Context, writer http.ResponseWri
 func (w *ResponseWriter) constructError(ctx context.Context, messageID string, err error) *httpresp.Error {
 	lang := ctx.Value(entity.ContextLang).(string)
 
-	message, errLoc := w.localizer.TryLocalize(lang, messageID)
+	message, errLoc := w.localizer.Localize(lang, messageID)
 	if errLoc != nil {
 		w.log.Debug().Err(errLoc).Msg("failed to localize message")
 		message = w.localizer.English(messageID)

@@ -1,4 +1,4 @@
-basePath: /api
+basePath: /
 definitions:
   controller.GetDatabasesResponseItem:
     properties:
@@ -16,7 +16,7 @@ definitions:
     type: object
 host: localhost:8080
 info:
-  contact: {}
+  contact: { }
   description: Free-Diagrams SQL API
   license:
     name: MIT
@@ -28,13 +28,13 @@ paths:
     get:
       description: Get all databases
       parameters:
-      - default: en-US
-        description: Language preference
-        in: header
-        name: Accept-Language
-        type: string
+        - default: en-US
+          description: Language preference
+          in: header
+          name: Accept-Language
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
@@ -55,10 +55,10 @@ paths:
           schema:
             $ref: '#/definitions/httpresp.Error'
       security:
-      - ApiKeyAuth: []
+        - ApiKeyAuth: [ ]
       summary: Get all databases
       tags:
-      - Database
+        - Database
 securityDefinitions:
   ApiKeyAuth:
     in: header

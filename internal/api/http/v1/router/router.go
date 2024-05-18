@@ -28,7 +28,7 @@ func New(router *chi.Mux, middleware *middleware.Middleware, wrapper *wrapper.Wr
 }
 
 func (r *Router) RegisterRoutes() {
-	r.router.Route("/api/v1", func(router chi.Router) {
+	r.router.Route("/v1", func(router chi.Router) {
 
 		router.Use(r.middleware.AcceptLanguageMiddleware)
 		router.Use(r.middleware.AuthMiddleware)

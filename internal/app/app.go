@@ -10,8 +10,8 @@ import (
 	"github.com/free-diagrams/sql-backend/internal/api/http/wrapper"
 	"github.com/free-diagrams/sql-backend/internal/config"
 	"github.com/free-diagrams/sql-backend/internal/infrastructure/repository/postgres"
-	"github.com/free-diagrams/sql-backend/internal/infrastructure/repository/postgres/adapter/database_repository"
-	"github.com/free-diagrams/sql-backend/internal/infrastructure/repository/postgres/adapter/user_repository"
+	"github.com/free-diagrams/sql-backend/internal/infrastructure/repository/postgres/adapter"
+	"github.com/free-diagrams/sql-backend/internal/infrastructure/repository/postgres/txmanager"
 	usecasev1 "github.com/free-diagrams/sql-backend/internal/usecase/v1"
 	"github.com/free-diagrams/sql-backend/pkg/chirouter"
 	"github.com/free-diagrams/sql-backend/pkg/httpserver"
@@ -53,14 +53,15 @@ func Run() {
 
 	bundle := i18n.NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", json.Unmarshal)
-	bundle.MustLoadMessageFile("internal/api/locale/en-US.json")
-	bundle.MustLoadMessageFile("internal/api/locale/ru-RU.json")
+	bundle.MustLoadMessageFile("internal/domain/locale/en-US.json")
+	bundle.MustLoadMessageFile("internal/domain/locale/ru-RU.json")
 	localizer := loclzr.New(bundle)
 
-	databaseRepository := database_repository.New(db, log)
-	userRepository := user_repository.New(db, log)
+	txManager := txmanager.New(db, log)
 
-	useCase := usecasev1.New(databaseRepository, userRepository, log)
+	repository := adapter.New(db, log)
+
+	useCase := usecasev1.New(txManager, repository, repository, log)
 
 	responseWriter := responsewriter.New(localizer, log)
 

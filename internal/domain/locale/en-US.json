@@ -1,6 +1,6 @@
 {
-  "UnspecifiedError": {
-    "other": "Unspecified error"
+  "UnexpectedError": {
+    "other": "Unexpected error"
   },
   "InternalDatabaseError": {
     "other": "Internal database error"

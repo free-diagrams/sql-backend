@@ -1,8 +1,8 @@
 package loclzr
 
 import (
+	"fmt"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
-	"github.com/pkg/errors"
 )
 
 type Localizer struct {
@@ -17,7 +17,7 @@ func New(bundle *i18n.Bundle) *Localizer {
 	}
 }
 
-func (l *Localizer) TryLocalize(lang string, messageID string) (string, error) {
+func (l *Localizer) Localize(lang string, messageID string) (string, error) {
 	localizeConfig := i18n.LocalizeConfig{
 		MessageID: messageID,
 	}
@@ -25,7 +25,7 @@ func (l *Localizer) TryLocalize(lang string, messageID string) (string, error) {
 	langLocalizer := i18n.NewLocalizer(l.bundle, lang)
 	localizedMessage, err := langLocalizer.Localize(&localizeConfig)
 	if err != nil {
-		return "", errors.Wrapf(err, "failed to localize message with id=%s to lang=%s", messageID, lang)
+		return "", fmt.Errorf("failed to localize message with id=%s to lang=%s", messageID, lang)
 	}
 
 	return localizedMessage, nil
